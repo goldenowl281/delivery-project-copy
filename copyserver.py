@@ -6,7 +6,7 @@ import allData
 class TCPserver:
     def __init__(self):
         self.server_ip = 'localhost'
-        self.server_port = 8081
+        self.server_port = 8084
 
     def main(self):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -103,16 +103,34 @@ class TCPserver:
         if menu_rec_option == "1":
             obj = allData.Data()
             shop_menu = obj.get_shop_name()
+            print(shop_menu)
+            print(type(shop_menu))
             sock.send(str(shop_menu).encode())
             shop_menu_choice = sock.recv(1024).decode("utf-8")
-            # shop_names_str = '\n'.join(shop_names)
-            # sock.send(shop_names_str.encode())
-            # shop_name = sock.recv(1024).decode("utf-8")
-            # print("Received shop name:", shop_name)
+            print(shop_menu_choice)
+            shop_menu = shop_menu.split("\n\n")
+            found = obj.search_result(shop_menu, shop_menu_choice)
+            buy_options = obj.buy_option()
+            if found:
+                sock.send(found.encode())  # Send back the response as a string
+                sock.send(buy_options.encode())
+
+            else:
+                sock.send("None".encode())  # If item not found, send "None" as a string
+
+            receive_from_client = sock.recv(1024).decode("utf-8")
+            print("hello", receive_from_client)
 
 
-            # a = "receive one"
-            # sock.send(a.encode())
+
+
+
+
+
+
+
+
+
 
 
 

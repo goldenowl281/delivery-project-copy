@@ -87,7 +87,7 @@ class Data:
         fullNumber = add_data + phoneNumber
         phoneNumber1 = fullNumber
 
-        db_ph_numbers = user_collection.find_one({"phoneNumber":phoneNumber1})
+        db_ph_numbers = user_collection.find_one({"phoneNumber": phoneNumber1})
         if db_ph_numbers:
             print("\nphone number found")
             stored_password = db_ph_numbers["password"]
@@ -128,53 +128,36 @@ class Data:
             output_str += f"\n{shop_name}: {soft_drinks}\n"
         return output_str
 
-    # def get_shop_name(self):
-    #     obj2 = database.Mongodatabase()
-    #     collections = obj2.collection
-    #     # Find all shops that have 'soft drink' menu
-    #     shops_with_soft_drinks = collections.find(
-    #         {"soft drink": {"$exists": True}})
-    #
-    #     # Create a dictionary to store shop names with 'soft drink' menu
-    #     shop_dict = {}
-    #
-    #     # Loop through all shops with 'soft drink' menu and add shop names and soft drinks to the dictionary
-    #     for shop in shops_with_soft_drinks:
-    #         shop_name = shop["Shop Name"]
-    #         soft_drinks = {drink["name"]: drink["price"] for drink in shop["soft drink"]}
-    #         shop_dict[shop_name] = soft_drinks
-    #
-    #     # Return the dictionary with shop names and 'soft drink' menu
-    #     return shop_dict
+    def search_result(self, shops, menu_option1):
+        output = ""
+        for shop in shops:
+            items = shop.split(': ')
+            shop_name = items[0]
+            item_list = items[1].split(', ')
+            i = 1
+            for item in item_list:
+                name, price = item.split(' (')
+                price = price[:-3]  # to rejuce last three word
+                if name == menu_option1:  # check if menu_option1 matches the item name
+                    output += f'{i}-  {name}: {price} ks\n'
+                    i += 1
+        return output
 
-    # def get_shop_name(self):
-    #     obj2 = database.Mongodatabase()
-    #     collections = obj2.collection
-    #     # Find all shops that have 'soft drink' menu
-    #     shops_with_soft_drinks = collections.find(
-    #         {"soft drink": {"$exists": True}})
-    #
-    #     # Create a dictionary to store shop names with 'soft drink' menu
-    #     shop_dict = {}
-    #
-    #     # Loop through all shops with 'soft drink' menu and add shop names and soft drinks to the dictionary
-    #     for shop in shops_with_soft_drinks:
-    #         shop_name = shop["Shop Name"]
-    #         soft_drinks = []
-    #         for drink in shop["soft drink"]:
-    #             soft_drink_name = drink["name"]
-    #             soft_drink_price = drink["price"]
-    #             soft_drinks.append(f"{soft_drink_name} ({soft_drink_price}ks)")
-    #         shop_dict[shop_name] = ", ".join(soft_drinks)
-    #
-    #     # Return the dictionary with shop names and 'soft drink' menu
-    #     return shop_dict
+    def search_result1(self, shops):
+        for shop in shops:
+            items = shop.split(': ')
+            shop_name = items[0]
+            item_list = items[1].split(', ')
+            print('\nShop Name:', shop_name)
+            i = 1
+            for item in item_list:
+                name, price = item.split(' (')
+                price = price[:-3]  # to rejuce last three word
+                print(f'{i}-  {name}: {price} ks')
+                i += 1
 
-    # def get_soft_drinks_menu(self, shop_name):
-    #     for data in data1:
-    #         if data['Shop Name'] == shop_name:
-    #             return data['soft drink']
-    #     return None
-
+    def buy_option(self):
+        buyOption = "\n PRESS 1: To cert--:# PRESS 2: To Cancel--:# PRESS 3: To confirm order--:"
+        return buyOption
 
 

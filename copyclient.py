@@ -1,10 +1,12 @@
 import socket
 import database
+import allData
+
 
 class TCPclient:
     def __init__(self):
         self.server_ip = 'localhost'
-        self.server_port = 8081
+        self.server_port = 8084
 
     def main(self):
 
@@ -18,7 +20,7 @@ class TCPclient:
                 print("PRESS 3: TO Show Menu")
 
                 option = input("ENTER OPTION_-:")
-
+                obj = allData.Data()
                 if option == "1":
                     client.send(option.encode())
                     rec_from_server = client.recv(4096)
@@ -30,7 +32,6 @@ class TCPclient:
                     email = input("Enter your Email Address: ")
                     password = input("Enter your Password: ")
                     confirmpassword = input("Enter your confirmPassword: ")
-
 
                     # send user inputs to server
                     create_account_data = f"{first_name}#{phoneNumber}#{email}#{password}#{confirmpassword}"
@@ -73,16 +74,23 @@ class TCPclient:
                     rec_from_server1 = rec_from_server1.decode()
                     print(rec_from_server1)
                     shops = rec_from_server1.split("\n\n")
-                    for shop in shops:
-                        items = shop.split(': ')
-                        shop_name = items[0]
-                        item_list = items[1].split(', ')
-                        print('\nShop Name:', shop_name)
-                        for item in item_list:
-                            name, price = item.split(' (')
-                            price = price[:-3]
-                            print('-', name, ':', price, 'ks')
+                    obj.search_result1(shops)
+                    menu_option1 = input("\nI have this item \nSelete what you want to take by name:--:")
+                    client.send(menu_option1.encode())
+                    found = client.recv(1024).decode("utf-8")
 
+                    if found != "None":
+                        print(found)
+                        option_buy = client.recv(1024).decode("utf-8")
+                        choices = option_buy.split("#")
+                        for menu in choices:
+                            print(menu)
+                        option_Buy = input("Enter your option:  ")
+                        if option_Buy == "1":
+                            buy_total = input("Choose how many items do you  want--:")
+                            client.send(buy_total.encode())
+                    else:
+                        print("Item not found.")
 
 
 if __name__ == "__main__":

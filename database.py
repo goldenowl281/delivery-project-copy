@@ -16,13 +16,13 @@ class Mongodatabase:
         print(error)
 
     def __init__(self):
-        data = {"_id": 2, "name": "sithu", "phoneNumber": 959970244289, "email": "sithu@gmail.com",
-                "password": "sithuaung"}
-        # try:
-        #     self.collection_1.insert_one(data)
-        #     print("insert successful")
-        # except Exception as error:
-        #     print(error)
+        data = {"_id": 13, "name": "sithuaung", "phoneNumber": 95911111111, "email": "sithu@gmail.com",
+                "password": "sithuaung", "history": []}
+        try:
+            self.collection_1.insert_one(data)
+            print("insert successful")
+        except Exception as error:
+            print(error)
 
         # def option(self):
         #     chooseOption = "PRESS 1: TO Create Account--:#nPRESS 2: TO Sign_in Account--:#PRESS 3: To Show Menu--:"

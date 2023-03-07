@@ -1,12 +1,13 @@
 import socket
 import database
 import allData
+import time
 
 
 class TCPclient:
     def __init__(self):
         self.server_ip = 'localhost'
-        self.server_port = 8082
+        self.server_port = 8081
 
     def main(self):
 
@@ -54,8 +55,9 @@ class TCPclient:
                     print(recData)
 
                 elif option == "3":
+                    client.send(option.encode())
                     while flag:
-                        client.send(option.encode())
+
 
                         # Receive and display menu option from server
                         rec_from_server = client.recv(4096)
@@ -83,14 +85,22 @@ class TCPclient:
 
                         if found != "None":
                             print("my order", found)
+                            hello = '1'
+                            client.send(hello.encode())
+                            # client.settimeout(30)  # set socket timeout to 10 seconds
+
                             option2_buy = client.recv(1024)
+                            # print("received data:", option2_buy)  # add this line to check if the program is receiving data
+
                             option2_buy = option2_buy.decode("utf-8")
-                            print("splitlskdk", type(option2_buy))
+                            # print("splitlskdk", type(option2_buy))
 
                             choices = option2_buy.split("#")
+                            # print('\n' * 10, flush=True)  # add this line to clear the console buffer
+                            # time.sleep(0.1)
                             while True:
                                 for menu in choices:
-                                    print(menu)
+                                    print(menu, flush=True)
                                 option_Buy = input("Enter your option:  ")
 
                                 if option_Buy == "1":
@@ -111,6 +121,24 @@ class TCPclient:
                                     break
 
                                     flag = False
+
+                                if option_Buy == "3":
+                                    client.send(option_Buy.encode())
+                                    item_list = client.recv(1024).decode("utf-8")
+                                    # print(item_list)
+                                    # print("type item_list", type(item_list))
+                                    item_list = item_list.strip("\n")    # split the string into a list of strings
+                                    for item in item_list:
+                                        shop_name = item.split(",")[0].split(":")[1].strip()
+                                        item_name = item.split(",")[1].split(":")[1].strip()
+                                        # item_total= item.split(",")[]
+
+
+
+
+
+
+
 
 
                         else:

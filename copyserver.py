@@ -2,13 +2,14 @@ import socket
 import threading
 from database import Mongodatabase
 import allData
+import re
 
 
 list_cert = []
 class TCPserver:
     def __init__(self):
         self.server_ip = 'localhost'
-        self.server_port = 8082
+        self.server_port = 8081
 
     def main(self):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -95,7 +96,6 @@ class TCPserver:
                 data ="login success "
                 sock.send(data.encode())
 
-
     def show_menu(self, sock):
         obj = allData.Data()
         menuData = obj.menuOption()
@@ -109,55 +109,94 @@ class TCPserver:
             print(type(shop_menu))
             sock.send(str(shop_menu).encode())
             shop_menu_choice = sock.recv(1024).decode("utf-8")
+
             print(shop_menu_choice)
             shop_menu = shop_menu.split("\n\n")
             found = obj.search_result(shop_menu, shop_menu_choice)
             print(found)
             print(type(found))
-            buy_options = obj.buy_option()
+
             if found:
                 sock.send(found.encode())  # Send back the response as a string
-                sock.send(buy_options.encode())
-                receive_from_client = sock.recv(1024).decode("utf-8")
-                print("hello", receive_from_client)
-                price = found.split(": ")
-                print(price)
-                shop_name = price[0].split('\n')[1]
-                item_name = price[0].split()[-1]  # get the last element after splitting by whitespace
-                item_price = price[1].split()[0]
+                hello_receive = sock.recv(1024).decode("utf-8")
+                if hello_receive == '1':
+                    buy_options = obj.buy_option()
+                    sock.send(buy_options.encode())
+                    receive_from_client = sock.recv(1024).decode("utf-8")
 
-                item_price = int(item_price)  # to change string into int
-                print(item_price)
-                print(type(item_price))
-                print(type(receive_from_client))
-                receive_from_client = int(receive_from_client)
-                return_price = item_price * receive_from_client
-                print(return_price)
-                sock.send(str(return_price).encode())
-                in_user_cert = f"Shop Name: {shop_name}, item name: {item_name}, item_price:{item_price}ks, item_total: {receive_from_client}, total amount: {str(return_price)}"
-                list_cert.append(in_user_cert)
-                print(list_cert)
-                print(type(in_user_cert))
+                    print("hello", receive_from_client)
+                    # try:
+                    #     if receive_from_client.strip() == "":
+                    #         error_message = "Invalid input, please enter a number"
+                    #         sock.send(error_message.encode())
+                    #     else:
+                    #         receive_from_client = int(receive_from_client)
+                    # except ValueError:
+                    #     error_message = "Invalid input. Please enter a valid integer."
+                    #     sock.send(error_message.encode())
+                    #     return self.show_menu(sock)
+                    # print("shop name ", shop_names)
+                    parts = found.split(": ")
+                    shop_name, item_name = parts[0].split(" ", 1)  # split at the first whitespace, limit the split to 2 parts
+                    item_price = parts[1].split()[0]  # split at whitespace, get the first element
+                    pattern = re.compile(r'[A-Za-z]+\b')
+                    shop_name = pattern.findall(shop_name)
+                    print("shop type data", type(shop_name))
+                    shop_names = str(shop_name[0])  # take the first (and only) element of the shop_name list
+                    print("after change shop type data", type(shop_names))
 
-                receive_from_client2 = sock.recv(1024).decode("utf-8")
+                    print("shop_name:", shop_names)
+                    print("item_name:", item_name)
+                    print("price:", item_price)
+                    # price = found.split(": ")
+                    # shop_name = price[0].split('\n')[1]
+                    # item_info = price[1].split(", ")
+                    # item_name = item_info[0].split(": ")[1]
+                    # item_price = item_info[2].split(":")[1].strip()
 
-                if receive_from_client2 == "5":
-                    self.show_menu(sock)
+                    item_price = int(item_price)  # to change string into int
+                    print(item_price)
+                    print(type(item_price))
+                    print(type(receive_from_client))
+                    receive_from_client = int(receive_from_client)
+                    return_price = item_price * receive_from_client
+                    print("total fees", return_price)
+                    sock.send(str(return_price).encode())
+                    in_user_cert = {f"Shop Name: {shop_names}, item name: {item_name}, item_price:{item_price}ks, item_total: {receive_from_client}, total amount: {str(return_price)}ks"}
+                    list_cert.append(in_user_cert)
+                    print(list_cert)
+                    print(type(in_user_cert))
 
-                elif receive_from_client2 == "4":
-                    self.show_menu(sock)
+                    receive_from_client2 = sock.recv(1024).decode("utf-8")
+
+                    if receive_from_client2 == "5":
+                        self.show_menu(sock)
+
+                    elif receive_from_client2 == "4":
+                        self.show_menu(sock)
+
+
+                    elif receive_from_client2 == "3":
+                        print("receive from three")
+                        # list_certs = '\n'.join(list_cert).encode('utf-8')  #to change list into string
+                        list_certs = '\n'.join(str(c) for c in list_cert).encode('utf-8')  # convert each item to string before joining
+
+                        sock.send(list_certs)
+                        print("send successfully")
+
+
 
             else:
                 sock.send("None".encode())  # If item not found, send "None" as a string
 
-        elif menu_rec_option == "5":
+        elif menu_rec_option in [ "4", "5"]:
             self.show_menu(sock)
 
-        elif menu_rec_option == "4":
-            self.show_menu(sock)
+        else:
+            sock.send("Invalid input. Please enter a valid option.".encode())
+            return self.show_menu(sock)
 
-        elif menu_rec_option == "3":
-            self.show_menu(sock)
+
 
 
 

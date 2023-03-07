@@ -1,8 +1,9 @@
 import database
-import client
+# import client
 import copyclient
-import server
+# import server
 import socket
+import re
 
 
 class Data:
@@ -103,8 +104,8 @@ class Data:
             return False
 
     def menuOption(self):
-        menu_option = "\n\n           I have this item::\n PRESS 1: soft drink--:# Press 2: Sea Foods--:# Press 3: BBQ--# PRESS 4: " \
-                      "Cakes--:# PRESS 5: Foods--:# PRESS 6: show all menu--:"
+        menu_option = "\n\n           I have this item::\nPRESS 1: soft drink--:#Press 2: Sea Foods--:#Press 3: BBQ--#PRESS 4: Cakes--:#PRESS 5: Foods--:#PRESS 6: show all menu--:"
+
         return menu_option
 
     def get_shop_name(self):
@@ -137,9 +138,11 @@ class Data:
             i = 1
             for item in item_list:
                 name, price = item.split(' (')
-                price = price[:-3]  # to rejuce last three word
+                # price = price[:-3]  # to rejuce last three word
+                prices = int(re.search(r'\d+', price).group())
+
                 if name == menu_option1:  # check if menu_option1 matches the item name
-                    output += f'{i}-  {name}: {price} ks\n'
+                    output += f'{shop_name}\n{i}-  {name}: {prices} ks \n'
                     i += 1
         return output
 
@@ -157,7 +160,7 @@ class Data:
                 i += 1
 
     def buy_option(self):
-        buyOption = "\n PRESS 1: To cert--:# PRESS 2: To Cancel--:# PRESS 3: To confirm order--:"
+        buyOption = "\nPRESS 1: To cert--:#PRESS 2: To Cancel--:#PRESS 3: To confirm order--:#PRESS 4: To choose more item--:#PRESS 5: To Exit--:"
         return buyOption
 
 

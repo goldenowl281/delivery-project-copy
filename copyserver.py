@@ -3,10 +3,12 @@ import threading
 from database import Mongodatabase
 import allData
 
+
+list_cert = []
 class TCPserver:
     def __init__(self):
         self.server_ip = 'localhost'
-        self.server_port = 8084
+        self.server_port = 8082
 
     def main(self):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -110,16 +112,56 @@ class TCPserver:
             print(shop_menu_choice)
             shop_menu = shop_menu.split("\n\n")
             found = obj.search_result(shop_menu, shop_menu_choice)
+            print(found)
+            print(type(found))
             buy_options = obj.buy_option()
             if found:
                 sock.send(found.encode())  # Send back the response as a string
                 sock.send(buy_options.encode())
+                receive_from_client = sock.recv(1024).decode("utf-8")
+                print("hello", receive_from_client)
+                price = found.split(": ")
+                print(price)
+                shop_name = price[0].split('\n')[1]
+                item_name = price[0].split()[-1]  # get the last element after splitting by whitespace
+                item_price = price[1].split()[0]
+
+                item_price = int(item_price)  # to change string into int
+                print(item_price)
+                print(type(item_price))
+                print(type(receive_from_client))
+                receive_from_client = int(receive_from_client)
+                return_price = item_price * receive_from_client
+                print(return_price)
+                sock.send(str(return_price).encode())
+                in_user_cert = f"Shop Name: {shop_name}, item name: {item_name}, item_price:{item_price}ks, item_total: {receive_from_client}, total amount: {str(return_price)}"
+                list_cert.append(in_user_cert)
+                print(list_cert)
+                print(type(in_user_cert))
+
+                receive_from_client2 = sock.recv(1024).decode("utf-8")
+
+                if receive_from_client2 == "5":
+                    self.show_menu(sock)
+
+                elif receive_from_client2 == "4":
+                    self.show_menu(sock)
 
             else:
                 sock.send("None".encode())  # If item not found, send "None" as a string
 
-            receive_from_client = sock.recv(1024).decode("utf-8")
-            print("hello", receive_from_client)
+        elif menu_rec_option == "5":
+            self.show_menu(sock)
+
+        elif menu_rec_option == "4":
+            self.show_menu(sock)
+
+        elif menu_rec_option == "3":
+            self.show_menu(sock)
+
+
+
+
 
 
 

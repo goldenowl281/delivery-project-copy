@@ -2,6 +2,8 @@ import socket
 import database
 import allData
 import time
+import json
+import ast
 
 
 class TCPclient:
@@ -124,25 +126,46 @@ class TCPclient:
 
                                 if option_Buy == "3":
                                     client.send(option_Buy.encode())
-                                    item_list = client.recv(1024).decode("utf-8")
-                                    # print(item_list)
-                                    # print("type item_list", type(item_list))
-                                    item_list = item_list.strip("\n")    # split the string into a list of strings
+                                    item_list = client.recv(1024).decode("utf-8").strip()
+                                    print("\n####This item are in your cert#####\n")
+                                    # print("item list", item_list)
+                                    item_list = item_list.split("\n")
+                                    # print("after split list", item_list)
+                                    total_amount = 0
+
                                     for item in item_list:
-                                        shop_name = item.split(",")[0].split(":")[1].strip()
-                                        item_name = item.split(",")[1].split(":")[1].strip()
-                                        # item_total= item.split(",")[]
+                                        item_data = item.split(", ")
+                                        print("\nShop Name: " + item_data[0].split(": ")[1])
+                                        print("item name: " + item_data[1].split(": ")[1])
+                                        print("item_price: " + item_data[2].split(": ")[1])
+                                        print("item_total: " + item_data[3].split(": ")[1])
+                                        amount_str = item_data[4].split(": ")[1]
+                                        print("\ntotal amount: " + amount_str)
+                                        total_amount += int(amount_str.split("ks")[0])
 
-
-
-
-
+                                    print("Your order_item Fees: " + str(total_amount) + "ks")
+                                    input("\nplease enter your location::")
+                                    deli_fees = 2000
+                                    print("your delivery fees "+ str(deli_fees) + " ks" )
+                                    total_fees = total_amount+deli_fees
+                                    print("\n Your total fees--:" + str(total_fees) + " ks")
+                                    print("\nPRESS 1: To confirm order--:\nPRESS 2: To cancel order--:")
+                                    order_confirm_option = input("Enter your option--:")
+                                    if order_confirm_option == 1:
+                                        self.order_confirm(client)
 
 
 
 
                         else:
                             print("Item not found.")
+
+    def order_confirm(self, sock):
+        ph_number = input("Enter your phone number--:")
+        print("ph_number type", type(ph_number))
+        sock.send(ph_number.encode())
+
+
 
 
 if __name__ == "__main__":

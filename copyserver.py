@@ -162,10 +162,11 @@ class TCPserver:
                     return_price = item_price * receive_from_client
                     print("total fees", return_price)
                     sock.send(str(return_price).encode())
-                    in_user_cert = {f"Shop Name: {shop_names}, item name: {item_name}, item_price:{item_price}ks, item_total: {receive_from_client}, total amount: {str(return_price)}ks"}
-                    list_cert.append(in_user_cert)
+                    in_user_cert = {f"Shop Name: {shop_names}, item name: {item_name}, item_price: {item_price}ks, item_total: {receive_from_client}, total amount: {str(return_price)}ks"}
+                    in_user_certs = str(in_user_cert.pop())
+                    list_cert.append(in_user_certs)
                     print(list_cert)
-                    print(type(in_user_cert))
+                    print("my_cert data type", type(in_user_certs))
 
                     receive_from_client2 = sock.recv(1024).decode("utf-8")
 
@@ -178,11 +179,13 @@ class TCPserver:
 
                     elif receive_from_client2 == "3":
                         print("receive from three")
-                        # list_certs = '\n'.join(list_cert).encode('utf-8')  #to change list into string
                         list_certs = '\n'.join(str(c) for c in list_cert).encode('utf-8')  # convert each item to string before joining
 
                         sock.send(list_certs)
                         print("send successfully")
+                        rec_ph_number_from_client = sock.recv(1024).decode("utf-8")
+                        print(type(rec_ph_number_from_client), rec_ph_number_from_client)
+
 
 
 

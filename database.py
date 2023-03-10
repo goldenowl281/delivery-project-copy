@@ -10,6 +10,9 @@ class Mongodatabase:
 
         collection = db['shop-collection']
         collection_1 = db['User_collection']
+        collection_2 = db['No_acc_user_collection']
+        collection_3 = db['delivery_collection']
+
 
         print("connection success")
     except Exception as error:
@@ -18,11 +21,11 @@ class Mongodatabase:
     def __init__(self):
         data = {"_id": 13, "name": "sithuaung", "phoneNumber": 95911111111, "email": "sithu@gmail.com",
                 "password": "sithuaung", "history": []}
-        try:
-            self.collection_1.insert_one(data)
-            print("insert successful")
-        except Exception as error:
-            print(error)
+        # try:
+        #     self.collection_2.insert_one(data)
+        #     print("insert successful")
+        # except Exception as error:
+        #     print(error)
 
         # def option(self):
         #     chooseOption = "PRESS 1: TO Create Account--:#nPRESS 2: TO Sign_in Account--:#PRESS 3: To Show Menu--:"
@@ -87,9 +90,32 @@ class Mongodatabase:
                 ]
             }
         ]
+        data2 = [
+            {
+                "_id":1, "Deli Name": "Aung Kaung Sett", "Deli PhoneNumber": "0911111111",
+                "location": "Quater1&2"
+            },
+            {
+                "_id": 2, "Deli Name": "Khant Ko KO", "Deli PhoneNumber": "0922222222",
+                "location": "Quater3&4"
+            },
+            {
+                "_id": 3, "Deli Name": "Than Hlaing", "Deli PhoneNumber": "0933333333",
+                "location": "Quater5&6"
+            },
+            {
+                "_id": 4, "Deli Name": "Kaung Min Khant", "Deli PhoneNumber": "0944444444",
+                "location": "Quater7&8"
+            },
+            {
+                "_id": 5, "Deli Name": "SiThu", "Deli PhoneNumber": "0955555555",
+                "location": "Quater1&2"
+            }
+        ]
+
         # try:
         #     self.collection.drop()
-        #     self.collection.insert_many(data1)
+        #     self.collection_3.insert_many(data2)
         #     print("insert successful")
         # except Exception as error:
         #     print(error)

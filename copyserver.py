@@ -1,6 +1,7 @@
 import socket
 import threading
-from database import Mongodatabase
+import database
+# from database import Mongodatabase
 import allData
 import re
 
@@ -46,6 +47,7 @@ class TCPserver:
             elif client_data == "3":
                 # Show menu
                 print("MENU OPTION")
+
                 self.show_menu(client_socket)
 
             else:
@@ -97,14 +99,15 @@ class TCPserver:
                 sock.send(data.encode())
 
     def show_menu(self, sock):
+        obj2 = database.Mongodatabase()
         obj = allData.Data()
         menuData = obj.menuOption()
         sock.send(menuData.encode())
         menu_rec_option = sock.recv(1024).decode("utf-8")
         print(menu_rec_option)
-        if menu_rec_option == "1":
+        if menu_rec_option in ["1", "2", "3", "4", "5"]:
             obj = allData.Data()
-            shop_menu = obj.get_shop_name()
+            shop_menu = obj.get_shop_name(menu_rec_option)
             print(shop_menu)
             print(type(shop_menu))
             sock.send(str(shop_menu).encode())
@@ -165,7 +168,7 @@ class TCPserver:
                     in_user_cert = {f"Shop Name: {shop_names}, item name: {item_name}, item_price: {item_price}ks, item_total: {receive_from_client}, total amount: {str(return_price)}ks"}
                     in_user_certs = str(in_user_cert.pop())
                     list_cert.append(in_user_certs)
-                    print(list_cert)
+                    print("in my cert", list_cert)
                     print("my_cert data type", type(in_user_certs))
 
                     receive_from_client2 = sock.recv(1024).decode("utf-8")
@@ -182,9 +185,34 @@ class TCPserver:
                         list_certs = '\n'.join(str(c) for c in list_cert).encode('utf-8')  # convert each item to string before joining
 
                         sock.send(list_certs)
+                        # print("----------333333", list_certs)
+                        rec_address = sock.recv(1024).decode("utf-8")
+                        # if rec_address == "1":
+                        #     obj2.collection_3.
+                        obj.send_to_deli(rec_address, list_cert)
+
+                        rec_total_amount = sock.recv(1024).decode("utf-8")
+                        print('total amount', rec_total_amount)
                         print("send successfully")
-                        rec_ph_number_from_client = sock.recv(1024).decode("utf-8")
-                        print(type(rec_ph_number_from_client), rec_ph_number_from_client)
+                        while True:
+                            rec_ph_number_from_client = sock.recv(1024).decode("utf-8")
+                            print(type(rec_ph_number_from_client), rec_ph_number_from_client)
+                            # rec_ph_number_from_client = int(rec_ph_number_from_client)
+                            if len(rec_ph_number_from_client) >= 8:
+                                phone_no_check = obj.checkPhNumber(rec_ph_number_from_client)
+
+                                if phone_no_check == False:
+                                    obj.search_ID_with_phNumber(rec_ph_number_from_client, list_cert, rec_total_amount)
+                                    break
+
+                                else:
+                                    obj.search_ID_with_phNumber(rec_ph_number_from_client, list_cert, rec_total_amount)
+                                    break
+
+                            else:
+                                print("please enter phone number correctly :lenghts must be at least 8")
+                                numberPhone = False
+                                sock.send(bytes(str(numberPhone), 'utf-8'))
 
 
 
@@ -192,7 +220,7 @@ class TCPserver:
             else:
                 sock.send("None".encode())  # If item not found, send "None" as a string
 
-        elif menu_rec_option in [ "4", "5"]:
+        elif menu_rec_option in ["4", "5"]:
             self.show_menu(sock)
 
         else:

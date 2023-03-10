@@ -144,15 +144,26 @@ class TCPclient:
                                         total_amount += int(amount_str.split("ks")[0])
 
                                     print("Your order_item Fees: " + str(total_amount) + "ks")
-                                    input("\nplease enter your location::")
+
+                                    obj.location()
+                                    location_add = input("Choose where are you from--:")
+                                    client.send(location_add.encode())
+
                                     deli_fees = 2000
+
                                     print("your delivery fees "+ str(deli_fees) + " ks" )
                                     total_fees = total_amount+deli_fees
                                     print("\n Your total fees--:" + str(total_fees) + " ks")
                                     print("\nPRESS 1: To confirm order--:\nPRESS 2: To cancel order--:")
                                     order_confirm_option = input("Enter your option--:")
-                                    if order_confirm_option == 1:
+
+                                    if order_confirm_option == "1":
+                                        client.send(str(total_fees).encode())
                                         self.order_confirm(client)
+                                        # ph_number = input("Enter your phone number--:")
+                                        # print("ph_number type", type(ph_number))
+                                        # sock.send(ph_number.encode())
+
 
 
 
@@ -163,8 +174,25 @@ class TCPclient:
     def order_confirm(self, sock):
         ph_number = input("Enter your phone number--:")
         print("ph_number type", type(ph_number))
-        sock.send(ph_number.encode())
+        try:
+            sent_bytes = sock.send(ph_number.encode())
+            print(f"Sent {sent_bytes} bytes to the server")
 
+        except Exception as e:
+            print(f"Error sending data: {e}")
+
+        number_ph_receive = sock.recv(1024).decode("utf-8")
+        if number_ph_receive != "False":
+
+
+            print("\nYou can pay with this pays\nPRESS 1:        KBZPAY ::: \nPRESS 2:        WAVE MONEY ::: \nPRESS 3:        TRUE MONEY")
+            option_pay = input("Enter option---:")
+            if option_pay == "1":
+                print("my Kbz number \n 09428348847(name: MgMg)\n 09455966699(name : KyawKyaw ")
+                print("\nAfter send pay please send to me history screenshot")
+
+        else:
+            self.order_confirm(sock)
 
 
 
